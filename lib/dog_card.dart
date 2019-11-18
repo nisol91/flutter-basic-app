@@ -34,6 +34,7 @@ class _DogCardState extends State<DogCard> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[dogImage, dogCard],
               )
+              //in alternativa
               // Positioned(
               //   child: dogCard,
               // ),
@@ -82,9 +83,15 @@ class _DogCardState extends State<DogCard> {
   //dogCard
   Widget get dogCard {
     return Container(
-        width: 300,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(1),
+        ),
+        width: MediaQuery.of(context).size.width * 0.7,
         height: 115.0,
         child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
           color: Colors.blueGrey,
           child: Padding(
             padding: const EdgeInsets.only(
@@ -115,14 +122,50 @@ class _DogCardState extends State<DogCard> {
   //dogImage
   String renderUrl;
 
+  //prima istanzio il dogAvatar e il placeholder,
+  //poi ritorno il widget che gestisce entrambe
+
   Widget get dogImage {
-    return Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
+    var dogAvatar = Hero(
+        tag: dog,
+        child: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: NetworkImage(renderUrl ?? ''))),
+        ));
+
+    // Placeholder is a static container the same size as the dog image.
+    var placeholder = Container(
+        width: 100.0,
+        height: 100.0,
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          image: DecorationImage(
-              fit: BoxFit.cover, image: NetworkImage(renderUrl ?? ''))),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.black54, Colors.black, Colors.blueGrey[600]],
+          ),
+        ),
+        alignment: Alignment.center,
+        child: CircularProgressIndicator());
+
+    // This is an animated widget built into flutter.
+    return AnimatedCrossFade(
+      // You pass it the starting widget and the ending widget.
+      firstChild: placeholder,
+      secondChild: dogAvatar,
+      // Then, you pass it a ternary that should be based on your state
+      //
+      // If renderUrl is null tell the widget to use the placeholder,
+      // otherwise use the dogAvatar.
+      crossFadeState: renderUrl == null
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      // Finally, pass in the amount of time the fade should take.
+      duration: Duration(milliseconds: 1000),
     );
   }
 }
