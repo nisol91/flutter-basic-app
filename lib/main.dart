@@ -3,11 +3,13 @@ import 'auth_screen.dart';
 import 'dog_model.dart';
 import 'new_dog_form.dart';
 import 'dog_list.dart';
+import './models/app_state.dart';
+import 'app_state_container.dart';
 
 void main() {
-  runApp(
-    new MyApp(),
-  );
+  runApp(new AppStateContainer(
+    child: new MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -88,8 +90,58 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  AppState appState;
+
+  Widget get _pageToDisplay {
+    if (appState.isLoading) {
+      return _loadingView;
+    } else {
+      return _homeView;
+    }
+  }
+
+  Widget get _loadingView {
+    return new Center(
+      child: new CircularProgressIndicator(),
+    );
+  }
+
+  // new
+  Widget get _homeView {
+    return Container(
+      child: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            // Where the linear gradient begins and ends
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            // Add one stop for each color. Stops should increase from 0 to 1
+            stops: [0.1, 0.5, 0.7, 0.9],
+            colors: [
+              // Colors are easy thanks to Flutter's Colors class.
+              Colors.blueGrey[900],
+              Colors.blueGrey[500],
+              Colors.blueGrey[400],
+              Colors.blueGrey[200],
+            ],
+          )),
+          child: Center(child: DogList(initialDoggos))),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // This is the InheritedWidget in action.
+    // You can reference the StatefulWidget that
+    // wraps it like this, which allows you to access any
+    // public method or property on it.
+    var container = AppStateContainer.of(context);
+    // For example, get grab its property called state!
+    appState = container.state;
+    // Everything this build method is called, which is when the state
+    // changes, Flutter will 'get' the _pageToDisplay widget, which will
+    // return the screen we want based on the appState.isLoading
+    Widget body = _pageToDisplay;
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),
@@ -107,25 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Container(
-        child: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              // Where the linear gradient begins and ends
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              // Add one stop for each color. Stops should increase from 0 to 1
-              stops: [0.1, 0.5, 0.7, 0.9],
-              colors: [
-                // Colors are easy thanks to Flutter's Colors class.
-                Colors.blueGrey[900],
-                Colors.blueGrey[500],
-                Colors.blueGrey[400],
-                Colors.blueGrey[200],
-              ],
-            )),
-            child: Center(child: DogList(initialDoggos))),
-      ),
+      body: body,
     );
   }
 }

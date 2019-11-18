@@ -27,8 +27,11 @@ class AuthScreenState extends State<AuthScreen> {
               new RaisedButton(
                 onPressed: () => print('login'),
                 color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(10.0),
+                    side: BorderSide(color: Colors.grey)),
                 child: new Container(
-                  width: 230.0,
+                  width: 250.0,
                   height: 50.0,
                   alignment: Alignment.center,
                   child: new Row(
