@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 class AppState {
   // Your app will use this to know when to display loading spinners.
   bool isLoading;
+  FirebaseUser user;
 
   // Constructor
   AppState({
     this.isLoading = false,
-    // this.user,
+    this.user,
   });
 
   // A constructor for when the app is loading.
